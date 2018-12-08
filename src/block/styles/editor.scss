@@ -1,0 +1,242 @@
+
+/**
+ * Often re-used variables
+ */
+// Fonts & basics
+$default-font: -apple-system, BlinkMacSystemFont,"Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell,"Helvetica Neue", sans-serif;
+$default-font-size: 13px;
+$default-line-height: 1.4;
+$editor-font: "Noto Serif", serif;
+$editor-html-font: Menlo, Consolas, monaco, monospace;
+$editor-font-size: 16px;
+$text-editor-font-size: 14px;
+$editor-line-height: 1.8;
+$big-font-size: 18px;
+$mobile-text-min-font-size: 16px; // Any font size below 16px will cause Mobile Safari to "zoom in"
+// Grid size
+$grid-size-small: 4px;
+$grid-size: 8px;
+$grid-size-large: 16px;
+$border-width: 1px;
+$content-width: 610px;
+/**
+ * Breakpoint mixins
+ */
+@mixin break-small() {
+	@media (min-width: #{ ($break-small) }) {
+		@content;
+	}
+}
+/**
+ * Colors
+ */
+$black: #000;
+$dark-gray-900: #191e23;
+$dark-gray-800: #23282d;
+$dark-gray-700: #32373c;
+$dark-gray-600: #40464d;
+$dark-gray-500: #555d66; // Use this most of the time for dark items.
+$dark-gray-400: #606a73;
+$dark-gray-300: #6c7781; // Lightest gray that can be used for AA text contrast.
+$dark-gray-200: #7e8993;
+$dark-gray-150: #8d96a0; // Lightest gray that can be used for AA non-text contrast.
+$dark-gray-100: #8f98a1;
+$light-gray-900: #a2aab2;
+$light-gray-800: #b5bcc2;
+$light-gray-700: #ccd0d4;
+$light-gray-600: #d7dade;
+$light-gray-500: #e2e4e7; // Good for "grayed" items and borders.
+$light-gray-400: #e8eaeb; // Good for "readonly" input fields and special text selection.
+$light-gray-300: #edeff0;
+$light-gray-200: #f3f4f5;
+$light-gray-100: #f8f9f9;
+$white: #fff;
+// Dark opacities, for use with light themes.
+$dark-opacity-900: rgba(#000510, 0.9);
+$dark-opacity-800: rgba(#00000a, 0.85);
+$dark-opacity-700: rgba(#06060b, 0.8);
+$dark-opacity-600: rgba(#000913, 0.75);
+$dark-opacity-500: rgba(#0a1829, 0.7);
+$dark-opacity-400: rgba(#0a1829, 0.65);
+$dark-opacity-300: rgba(#0e1c2e, 0.62);
+$dark-opacity-200: rgba(#162435, 0.55);
+$dark-opacity-100: rgba(#223443, 0.5);
+$dark-opacity-light-900: rgba(#304455, 0.45);
+$dark-opacity-light-800: rgba(#425863, 0.4);
+$dark-opacity-light-700: rgba(#667886, 0.35);
+$dark-opacity-light-600: rgba(#7b86a2, 0.3);
+$dark-opacity-light-500: rgba(#9197a2, 0.25);
+$dark-opacity-light-400: rgba(#95959c, 0.2);
+$dark-opacity-light-300: rgba(#829493, 0.15);
+$dark-opacity-light-200: rgba(#8b8b96, 0.1);
+$dark-opacity-light-100: rgba(#747474, 0.05);
+/**
+ * Breakpoints & Media Queries
+ */
+$break-huge: 1440px;
+$break-wide: 1280px;
+$break-xlarge: 1080px;
+$break-large: 960px;
+$break-medium: 782px;
+$break-small: 600px;
+$break-mobile: 480px;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Override the default list style type _only in the editor_
+// to avoid :not() selector specificity issues.
+// See https://github.com/WordPress/gutenberg/pull/10358
+ul.wp-block-gallery li {
+	list-style-type: none;
+}
+
+.blocks-gallery-item {
+
+	// Hide the focus outline that otherwise briefly appears when selecting a block.
+	figure:not(.is-selected):focus {
+		outline: none;
+	}
+
+	img:focus,
+	.is-selected {
+		outline: 4px solid theme(primary);
+	}
+
+	.is-transient img {
+		opacity: 0.3;
+	}
+
+	.editor-rich-text {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		max-height: 100%;
+		overflow-y: auto;
+	}
+
+	.editor-rich-text figcaption:not([data-is-placeholder-visible="true"]) {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.is-selected .editor-rich-text {
+		// IE calculates this incorrectly, so leave it to modern browsers.
+		@supports (position: sticky) {
+			right: 0;
+			left: 0;
+			margin-top: -4px;
+		}
+
+		// Override negative margins so this toolbar isn't hidden by overflow. Overflow is needed for long captions.
+		.editor-rich-text__inline-toolbar {
+			top: 0;
+		}
+
+		// Make extra space for the inline toolbar.
+		.editor-rich-text__tinymce {
+			padding-top: 48px;
+		}
+	}
+
+	.components-form-file-upload,
+	.components-button.block-library-gallery-add-item-button {
+		width: 100%;
+		height: 100%;
+	}
+
+	.components-button.block-library-gallery-add-item-button {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		box-shadow: none;
+		border: none;
+		border-radius: 0;
+		min-height: 100px;
+
+		& .dashicon {
+			margin-top: 10px;
+		}
+
+		&:hover,
+		&:focus {
+			border: $border-width solid $dark-gray-500;
+		}
+	}
+
+	.editor-rich-text .editor-rich-text__tinymce {
+		a {
+			color: $white;
+		}
+
+		&:focus a[data-mce-selected] {
+			color: rgba(0, 0, 0, 0.2);
+		}
+	}
+}
+
+.block-library-gallery-item__inline-menu {
+	padding: 2px;
+	position: absolute;
+	top: -2px;
+	right: -2px;
+	background-color: theme(primary);
+	display: inline-flex;
+	z-index: z-index(".block-library-gallery-item__inline-menu");
+
+	.components-button {
+		color: $white;
+		&:hover,
+		&:focus {
+			color: $white;
+		}
+	}
+}
+
+.blocks-gallery-item__remove {
+	padding: 0;
+
+	&.components-button:focus {
+		color: inherit;
+	}
+}
+
+.blocks-gallery-item .components-spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -9px;
+	margin-left: -9px;
+}
+
+// Last item always needs margins reset.
+// When block is selected, only reset the right margin of the 2nd to last item.
+.wp-block-gallery {
+	.is-selected & .blocks-gallery-image:nth-last-child(2),
+	.is-selected & .blocks-gallery-item:nth-last-child(2),
+	.is-typing & .blocks-gallery-image:nth-last-child(2),
+	.is-typing & .blocks-gallery-item:nth-last-child(2) {
+		margin-right: 0;
+	}
+}
+
+
+
+
+
+
+
+
+
+
