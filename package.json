@@ -1,8 +1,8 @@
 {
-  "name": "photoswipe-gallery-block",
+  "name": "wp-photoswipe-gallery-block",
   "version": "1.0.0",
   "description": "Gutenberg gallery block with PhotoSwipe",
-  "homepage": "https://github.com/radiium/photoswipe-gallery-block",
+  "homepage": "https://github.com/radiium/wp-photoswipe-gallery-block",
   "author": {
     "name": "radiium",
     "email": "remip.dev@gmail.com",

@@ -2,7 +2,7 @@
  /**
   *
  * Plugin Name: PhotoSwipe Gallery block
- * Plugin URI: https://github.com/radiium/photoswipe-gallery-block
+ * Plugin URI: https://github.com/radiium/wp-photoswipe-gallery-block
  * Description: Gutenberg gallery block with PhotoSwipe
  * Version: 1.0.0
  * Author: radiium
