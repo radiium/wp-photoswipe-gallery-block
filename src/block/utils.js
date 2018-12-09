@@ -22,6 +22,7 @@ export const parseShortcodeIds = ( ids ) => {
 export const pickRelevantMediaFiles = ( image ) => {
 	const imageProps = pick( image, [ 'alt', 'id', 'link', 'caption' ] );
 	imageProps.url = get( image, [ 'sizes', 'large', 'url' ] ) || get( image, [ 'media_details', 'sizes', 'large', 'source_url' ] ) || image.url;
-	imageProps.sizes = JSON.stringify(get(image, ['sizes']));
+	const sizes = get( image, [ 'sizes' ] ) || get( image, [ 'media_details', 'sizes' ] ) || image.sizes
+	imageProps.sizes = JSON.stringify(sizes);
 	return imageProps;
 };

@@ -177,8 +177,9 @@ export const settings = {
 
 wp.blocks.registerBlockType( 'radiium/photoswipe-gallery', settings);
 
-const getSize = (sizesString) => {
-	const parsedSizes = JSON.parse(sizesString);
+
+
+const getSize = (parsedSizes) => {
 	if (parsedSizes) {
 		const width = parsedSizes.large.width;
 		const height = parsedSizes.large.height;
@@ -187,41 +188,90 @@ const getSize = (sizesString) => {
 	return '1024x1024';
 };
 
-
 const createPhotoGallery = (images) => {
+
+	return (
+		<div class="galleryContainer" itemscope itemtype="http://schema.org/ImageGallery">
+			{ images.map(function( image ) {
+
+				const parsedSizes = JSON.parse(image.sizes);
+				const dataSize = getSize(parsedSizes);
+				const dataSizesObj = image.sizes;
+
+				let srcsetList = [];
+				let sizesList = [];
+				for (const key in parsedSizes) {
+					if ( key.indexOf('custom_size') !== -1 && parsedSizes.hasOwnProperty(key)) {
+						const obj = parsedSizes[key];
+						srcsetList.push(`${obj.url} ${obj.width}w`);
+						sizesList.push(`(max-width: ${obj.width}px) ${obj.width}px`);
+					}
+				}
+				srcsetList = srcsetList.join(', ');
+				sizesList = sizesList.join(', ');
+
+				return (
+					<figure class="galleryItem">
+						<a className="galleryLink"
+							href={ image.url }
+							itemprop="contentUrl"
+							data-size={ dataSize }>
+
+							<img
+								src={ image.url }
+								alt="Imgage de clichesnicolas.com"
+								draggable="false"
+								itemprop="thumbnail"
+								sizes="100vw"
+								sizes={sizesList}
+								srcset={srcsetList}
+								data-link={image.link}
+								data-id={ image.id }
+								data-sizes-obj={ dataSizesObj }
+								class="galleryImg" />
+						</a>
+					</figure>
+				)
+			}) }
+		</div>
+
+	);
+
+	const imgList = images.map(function( image ) {
+
+		const url = image.url;
+		const size = getSize(image.sizes);
+		const sizes = image.sizes || {};
+
+		return createElement('figure', {
+				className: 'galleryItem',
+			},
+			createElement('a', {
+					'className': 'galleryLink',
+					'href': url,
+					'itemprop': 'contentUrl',
+					'data-size': size
+				},
+				createElement( 'img', {
+					'className': 'galleryImg',
+					'src': url,
+					'alt': 'Imgage de clichesnicolas.com',
+					'draggable': false,
+					'itemprop': 'thumbnail',
+					'data-link': image.link,
+					'data-id': image.id,
+					'data-sizes-obj': sizes
+				})
+			)
+		)
+	});
+
 	return createElement('div', {
 			'className': 'galleryContainer',
 			'itemscope': '',
 			'itemtype': 'http://schema.org/ImageGallery'
 		},
-		images.map(function( image ) {
 
-			const url = image.url;
-			const size = getSize(image.sizes);
-			const sizes = image.sizes || {};
-
-			return createElement('figure', {
-					className: 'galleryItem',
-				},
-				createElement('a', {
-						'className': 'galleryLink',
-						'href': url,
-						'itemprop': 'contentUrl',
-						'data-size': size
-					},
-					createElement( 'img', {
-						'className': 'galleryImg',
-						'src': url,
-						'alt': 'Imgage de clichesnicolas.com',
-						'draggable': false,
-						'itemprop': 'thumbnail',
-						'data-link': image.link,
-						'data-id': image.id,
-						'data-sizes-obj': sizes
-					})
-				)
-			)
-		})
 	);
 };
 
