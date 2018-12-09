@@ -234,7 +234,6 @@ const createPhotoGallery = (images) => {
 				)
 			}) }
 		</div>
-
 	);
 
 	const imgList = images.map(function( image ) {
