@@ -2,12 +2,17 @@ jQuery( document ).ready( function( $ ) {
 
 
 
-
-    // Reveal gallery items on scroll
-	var ScrollReveal = window.ScrollReveal;
-	ScrollReveal().reveal('.galleryItem', {
-        delay: 200
+	const observer = lozad('.gallery-img', {
+		rootMargin: '100px 0px',
+		threshold: 1,
+		loaded: function(el) {
+			el.onload = (e) => {
+				el.classList.add('loaded');
+			};
+		}
 	});
+	observer.observe();
+
 
 	// Photoswap gallery init
 	// See: http://photoswipe.com/
@@ -234,12 +239,12 @@ jQuery( document ).ready( function( $ ) {
 	};
 
 	/*
-		galleryContainer
-		galleryItem
-		galleryLink
-		galleryImg
+		gallery-container
+		gallery-item
+		gallery-link
+		gallery-img
 	*/
 	// execute above function
-    initPhotoSwipeFromDOM('.galleryContainer');
+    initPhotoSwipeFromDOM('.gallery-container');
 
 });
