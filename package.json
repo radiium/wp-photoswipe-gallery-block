@@ -11,7 +11,11 @@
   "keywords": [
     "Wordpress",
     "Gutenberg",
+    "Gutenberg Block",
+    "Gallery",
     "JavaScript",
+    "PhotoSwipe",
+    "Lozad",
     "React"
   ],
   "private": true,
@@ -21,14 +25,8 @@
     "eject": "cgb-scripts eject"
   },
   "dependencies": {
-    "cgb-scripts": "1.13.0"
-  },
-  "devDependencies": {
-    "@wordpress/blob": "^2.1.0",
-    "@wordpress/blocks": "^6.0.3",
-    "@wordpress/components": "^7.0.3",
-    "@wordpress/editor": "^9.0.4",
-    "@wordpress/element": "^2.1.8",
-    "@wordpress/i18n": "^3.1.0"
+    "cgb-scripts": "1.13.0",
+    "classnames": "^2.2.6",
+    "lodash": "^4.17.11"
   }
 }
