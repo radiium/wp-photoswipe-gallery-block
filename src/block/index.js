@@ -1,340 +1,290 @@
-import { filter, every, map, some } from 'lodash';
-
+/*
+import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
-import { createBlock } from '@wordpress/blocks';
-import { mediaUpload } from '@wordpress/editor';
-import { createBlobURL } from '@wordpress/blob';
-import { G, Path, SVG } from '@wordpress/components';
-const createElement = wp.element.createElement;
+import { Component, createElement } from '@wordpress/element';
+*/
 
-import { default as edit} from './edit';
-import {
-	pickRelevantMediaFiles,
-	parseShortcodeIds } from './utils';
+const { registerBlockType } = wp.blocks;
+const { __ } = wp.i18n;
+const { Component, createElement } = wp.element;
+const { RichText, mediaUpload } = wp.editor;
+const { createBlobURL } = wp.blob;
+const { G, Path, SVG } = wp.components;
+
+
+// import { default as GalleryEdit, defaultColumnsNumber } from './edit';
+// import { default as save} from './save';
+// import { default as blockAttributes} from './attributes';
 
 import './styles/editor.scss';
 import './styles/style.scss';
+import classnames from 'classnames';
 
-export const name = 'radiium/photoswipe-gallery';
+/**
+ * Internal dependencies
+ */
+import { default as Edit, defaultColumnsNumber } from './edit';
 
 const blockAttributes = {
 	images: {
 		type: 'array',
 		default: [],
 		source: 'query',
-		selector: 'div.galleryContainer .galleryItem',
+		selector: 'figure.gallery-item',
 		query: {
 			url: {
 				source: 'attribute',
-				selector: 'img',
-				attribute: 'src'
-			},
-			link: {
-				source: 'attribute',
-				selector: 'img',
-				attribute: 'data-link'
-			},
-			alt: {
-				source: 'attribute',
-				selector: 'img',
-				attribute: 'alt',
-				default: ''
+				selector: 'img.gallery-img',
+				attribute: 'data-src',
 			},
 			id: {
 				source: 'attribute',
-				selector: 'img',
-				attribute: 'data-id'
+				selector: 'img.gallery-img',
+				attribute: 'data-id',
 			},
-
-			sizes: {
+			alt: {
 				source: 'attribute',
-				selector: 'img',
-				attribute: 'data-sizes-obj',
-				default: '{}'
-			}
-
+				selector: 'img.gallery-img',
+				attribute: 'alt',
+				default: '',
+			},
+			caption: {
+				type: 'string',
+				source: 'html',
+				selector: 'figcaption',
+			},
 		},
 	},
 	ids: {
 		type: 'array',
-		default: []
+		default: [],
 	},
-	linkTo: {
+
+	// General settings
+	galleryPadding: {
+		type: 'number',
+		default: 0,
+	},
+	galleryPaddingMobile: {
+		type: 'number',
+		default: 0,
+	},
+	gutter: {
+		type: 'number',
+		default: 15,
+	},
+	gutterMobile: {
+		type: 'number',
+		default: 10,
+	},
+	showCaptions: {
+		type: 'boolean',
+		default: true,
+	},
+
+	// Layout settings
+	layoutType: {
 		type: 'string',
-		default: 'none'
+		default: 'row',
+	},
+	layoutStackDim: {
+		type: 'number',
+		default: 200,
+	},
+	layoutRowDim: {
+		type: 'number',
+		default: 200,
+	},
+	layoutColumnDim: {
+		type: 'number',
+		default: 200,
+	},
+	layoutGridDim: {
+		type: 'number',
+		default: 200,
+	},
+
+	// Layout items settings
+	imageCrop: {
+		type: 'boolean',
+		default: false,
+	},
+	imageShapeType: {
+		type: 'string',
+		default: 'square',
+	},
+	imageShapeValue: {
+		type: 'string',
 	},
 };
 
-export const settings = {
-	title: __( 'Photoswipe Gallery' ),
-	description: __( 'Display multiple images in a gallery with PhotoSwipe plugin.' ),
-	icon: 'format-gallery',
+const parseShortcodeIds = ( ids ) => {
+	if ( ! ids ) {
+		return [];
+	}
+
+	return ids.split( ',' ).map( ( id ) => (
+		parseInt( id, 10 )
+	) );
+};
+
+const settings = {
+	title: __( 'WP Photoswipe Gallery' ),
+	description: __( 'Display multiple images in a rich gallery with photoswipe lightbox.' ),
+	icon: <SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><Path fill="none" d="M0 0h24v24H0V0z" /><G><Path d="M20 4v12H8V4h12m0-2H8L6 4v12l2 2h12l2-2V4l-2-2z" /><Path d="M12 12l1 2 3-3 3 4H9z" /><Path d="M2 6v14l2 2h14v-2H4V6H2z" /></G></SVG>,
 	category: 'common',
-	keywords: [ __( 'images' ), __( 'photos' ), __( 'PhotoSwipe' ) ],
+	keywords: [ __( 'images' ), __( 'photos' ) ],
 	attributes: blockAttributes,
 	supports: {
 		align: false,
-		multiple: false,
 	},
 
-	transforms: {
-		from: [
-			{
-				type: 'block',
-				isMultiBlock: true,
-				blocks: [ 'core/image' ],
-				transform: ( attributes ) => {
-					const validImages = filter( attributes, ( { id, url } ) => id && url );
-					if ( validImages.length > 0 ) {
-						return createBlock( 'radiium/photoswipe-gallery', {
-							images: validImages.map( ( { id, url, alt, caption } ) => ( { id, url, alt, caption } ) ),
-							ids: validImages.map( ( { id } ) => id ),
-						} );
-					}
-					return createBlock( 'radiium/photoswipe-gallery' );
-				},
-			},
-			{
-				type: 'shortcode',
-				tag: 'photoswipe-gallery',
-				attributes: {
-					images: {
-						type: 'array',
-						shortcode: ( { named: { ids } } ) => {
-							return parseShortcodeIds( ids ).map( ( id ) => ( {
-								id,
-							} ) );
-						},
-					},
-					ids: {
-						type: 'array',
-						shortcode: ( { named: { ids } } ) => {
-							return parseShortcodeIds( ids );
-						},
-					},
-					linkTo: {
-						type: 'string',
-						shortcode: ( { named: { link = 'attachment' } } ) => {
-							// console.log('linkTo shortcode', named);
-							return link === 'file' ? 'media' : link;
-						},
-					},
-				},
-			},
-			{
-				// When created by drag and dropping multiple files on an insertion point
-				type: 'files',
-				isMatch( files ) {
-					return files.length !== 1 && every( files, ( file ) => file.type.indexOf( 'image/' ) === 0 );
-				},
-				transform( files, onChange ) {
-					const block = createBlock( name, {
-						images: files.map( ( file ) => pickRelevantMediaFiles( {
-							url: createBlobURL( file ),
-						} ) ),
-					} );
-					mediaUpload( {
-						filesList: files,
-						onFileChange: ( images ) => {
-							const imagesAttr = images.map(
-								pickRelevantMediaFiles
-							);
-							onChange( block.clientId, {
-								ids: map( imagesAttr, 'id' ),
-								images: imagesAttr,
-							} );
-						},
-						allowedTypes: [ 'image' ],
-					} );
-					return block;
-				},
-			},
-		],
-		to: [
-			{
-				type: 'block',
-				blocks: [ 'core/image' ],
-				transform: ( { images } ) => {
-					if ( images.length > 0 ) {
-						return images.map( ( { id, url, alt, caption } ) => createBlock( 'core/image', { id, url, alt, caption } ) );
-					}
-					return createBlock( 'core/image' );
-				},
-			},
-		],
-	},
+	edit: Edit,
 
-	edit,
+
+
 
 	save( { attributes } ) {
-		const { images } = attributes;
-		return createElement('div', { 'className': 'galleryWrapper' },
-			createPhotoGallery(images),
-			createPhotoswipeGallery()
+		const {
+			images,
+
+			layoutType,
+			layoutStackDim,
+			layoutRowDim,
+			layoutColumnDim,
+			layoutGridDim,
+
+			imageCrop,
+			imageShapeType,
+			imageShapeValue,
+
+			galleryPadding,
+			galleryPaddingMobile,
+			gutter,
+			gutterMobile,
+			showCaptions,
+		} = attributes;
+
+		const galleryClass = classnames('gallery-container', {
+			[`layout-type-${ layoutType }`]: layoutType,
+			[`layout-stack-dim-${ layoutStackDim }`]: layoutType === 'stack' && layoutStackDim,
+			[`layout-row-dim-${ layoutRowDim }`]: layoutType === 'row' && layoutRowDim,
+			[`layout-column-dim-${ layoutColumnDim }`]: layoutType === 'column' && layoutColumnDim,
+			[`layout-grid-dim-${ layoutGridDim }`]: layoutType === 'grid' && layoutGridDim,
+
+			[`image-crop`]: imageCrop,
+			[`image-shape-type-${ imageShapeType }`]: imageCrop && imageShapeType,
+			[`image-shape-value`]: imageCrop && imageShapeType === 'custom',
+
+			[`gallery-padding-${ galleryPadding }`]: galleryPadding > 0,
+			[`gallery-padding-mobile-${ galleryPaddingMobile }`]: galleryPaddingMobile > 0,
+			[`no-gutter`]: (gutter === 0) ,
+			[`no-gutter-mobile`]: (gutterMobile === 0) ,
+			[`gutter-${ gutter }`]: gutter > 0,
+			[`gutter-mobile-${ gutterMobile }`]: gutterMobile > 0,
+		});
+
+		const itemClass = classnames('gallery-item');
+		const itemStyle = (imageShapeType === 'custom' && imageShapeValue)
+			? { clipPath: imageShapeValue }
+			: {};
+
+		const linkClass = classnames('gallery-link');
+		const captionClass = classnames('galleryCaption');
+		const captionsStyle = {
+			display: !!showCaptions ? 'table' : 'none'
+		};
+
+
+
+		// return null;
+
+		return (
+			<div>
+				<div className={ galleryClass }
+					itemtype="http://schema.org/ImageGallery"
+					itemscope="">
+
+					{ images.map((image) => {
+
+						const imgClass = classnames('gallery-img gallery-img-prod', {
+							[`wp-image-${ image.id }`]: image.id
+						});
+
+						return (
+							<figure key={ image.id || image.url }
+								className={ itemClass }
+								style={ itemStyle }>
+
+								<a className={ linkClass }
+									href={ image.url }
+									itemprop="contentUrl"
+									data-size="400x300">
+
+									<img className={ imgClass }
+										data-id={ image.id }
+										draggable="false"
+										itemprop="thumbnail"
+										data-src={ image.url }
+										alt={ image.alt } />
+								</a>
+
+								{ image.caption && image.caption.length > 0 && (
+									<RichText.Content
+										className={ captionClass }
+										style={ captionsStyle }
+										tagName="figcaption"
+										value={ image.caption }
+										itemprop="caption description"/>
+								) }
+							</figure>
+						);
+					})}
+				</div>
+				{ createPhotoswipeGalleryTemplate() }
+			</div>
 		);
-	}
+	},
 };
 
-wp.blocks.registerBlockType( 'radiium/photoswipe-gallery', settings);
+registerBlockType( 'radiium/photoswipe-gallery', settings);
 
-
-
-const getSize = (parsedSizes) => {
-	if (parsedSizes) {
-		const width = parsedSizes.large.width;
-		const height = parsedSizes.large.height;
-		return width + 'x' + height;
-	}
-	return '1024x1024';
-};
-
-const createPhotoGallery = (images) => {
-
-	return (
-		<div class="galleryContainer" itemscope itemtype="http://schema.org/ImageGallery">
-			{ images.map(function( image ) {
-
-				const parsedSizes = JSON.parse(image.sizes);
-				const dataSize = getSize(parsedSizes);
-				const dataSizesObj = image.sizes;
-
-				let srcsetList = [];
-				let sizesList = [];
-				for (const key in parsedSizes) {
-					if ( key.indexOf('custom_size') !== -1 && parsedSizes.hasOwnProperty(key)) {
-						const obj = parsedSizes[key];
-						srcsetList.push(`${obj.url} ${obj.width}w`);
-						sizesList.push(`(max-width: ${obj.width}px) ${obj.width}px`);
-					}
-				}
-				srcsetList = srcsetList.join(', ');
-				sizesList = sizesList.join(', ');
-
-				return (
-					<figure class="galleryItem">
-						<a className="galleryLink"
-							href={ image.url }
-							itemprop="contentUrl"
-							data-size={ dataSize }>
-
-							<img
-								src={ image.url }
-								alt="Imgage de clichesnicolas.com"
-								draggable="false"
-								itemprop="thumbnail"
-								sizes="100vw"
-								sizes={sizesList}
-								srcset={srcsetList}
-								data-link={image.link}
-								data-id={ image.id }
-								data-sizes-obj={ dataSizesObj }
-								class="galleryImg" />
-						</a>
-					</figure>
-				)
-			}) }
-		</div>
-	);
-
-	const imgList = images.map(function( image ) {
-
-		const url = image.url;
-		const size = getSize(image.sizes);
-		const sizes = image.sizes || {};
-
-		return createElement('figure', {
-				className: 'galleryItem',
-			},
-			createElement('a', {
-					'className': 'galleryLink',
-					'href': url,
-					'itemprop': 'contentUrl',
-					'data-size': size
-				},
-				createElement( 'img', {
-					'className': 'galleryImg',
-					'src': url,
-					'alt': 'Imgage de clichesnicolas.com',
-					'draggable': false,
-					'itemprop': 'thumbnail',
-					'data-link': image.link,
-					'data-id': image.id,
-					'data-sizes-obj': sizes
-				})
-			)
-		)
-	});
-
-	return createElement('div', {
-			'className': 'galleryContainer',
-			'itemscope': '',
-			'itemtype': 'http://schema.org/ImageGallery'
-		},
-
-	);
-};
-
-const createPhotoswipeGallery = () => {
-	return createElement('div', {
-			'className': 'pswp',
-			'tabindex': '-1',
-			'role': 'dialog',
-			'aria-hidden': 'true'
-		},
-		createElement('div', { 'className': 'pswp__bg'}),
-		createElement('div', { 'className': 'pswp__scroll-wrap'},
-			createElement('div', { 'className': 'pswp__container'},
-				createElement('div', { 'className': 'pswp__item'}),
-				createElement('div', { 'className': 'pswp__item'}),
-				createElement('div', { 'className': 'pswp__item'}),
-			),
-
-			createElement('div', { 'className': 'pswp__ui pswp__ui--hidden'},
-				createElement('div', { 'className': 'pswp__top-bar'},
-
-					createElement('div', { 'className': 'pswp__counter'}),
-					createElement('button', {
-						'className': 'pswp__button pswp__button--close',
-						'title': 'Close (Esc)'
-					}),
-
-					createElement('button', {
-						'className': 'pswp__button pswp__button--share',
-						'title': 'Share'
-					}),
-					createElement('button', {
-						'className': 'pswp__button pswp__button--fs',
-						'title': 'Toggle fullscreen'
-					}),
-					createElement('button', {
-						'className': 'pswp__button pswp__button--zoom',
-						'title': 'Zoom in/out'
-					}),
-
-					createElement('button', { 'className': 'pswp__preloader'},
-						createElement('div', { 'className': 'pswp__preloader__icn'},
-							createElement('div', { 'className': 'pswp__preloader__cut'},
-								createElement('div', { 'className': 'pswp__preloader__donut'})
-							),
-						)
-					),
-				),
-
-				createElement('div', { 'className': 'pswp__share-modal pswp__share-modal--hidden pswp__single-tap'},
-					createElement('div', { 'className': 'pswp__share-tooltip'})
-				),
-				createElement('button', {
-					'className': 'pswp__button pswp__button--arrow--left',
-					'title': 'Previous (arrow left)'
-				}),
-				createElement('button', {
-					'className': 'pswp__button pswp__button--arrow--right',
-					'title': 'Next (arrow right)'
-				}),
-				createElement('div', { 'className': 'pswp__caption'},
-					createElement('div', { 'className': 'pswp__caption__center'})
-				)
-			)
-		)
-	);
-};
+// Photoswipe lightbox gallery snippet
+const createPhotoswipeGalleryTemplate = () => {
+	return(
+        <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="pswp__bg"></div>
+			<div class="pswp__scroll-wrap">
+				<div class="pswp__container">
+					<div class="pswp__item"></div>
+					<div class="pswp__item"></div>
+					<div class="pswp__item"></div>
+				</div>
+				<div class="pswp__ui pswp__ui--hidden">
+					<div class="pswp__top-bar">
+						<div class="pswp__counter"></div>
+						<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+						<button class="pswp__button pswp__button--share" title="Share"></button>
+						<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+						<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+						<div class="pswp__preloader">
+							<div class="pswp__preloader__icn">
+							  <div class="pswp__preloader__cut">
+								<div class="pswp__preloader__donut"></div>
+							  </div>
+							</div>
+						</div>
+					</div>
+					<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+						<div class="pswp__share-tooltip"></div>
+					</div>
+					<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+					<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+					<div class="pswp__caption">
+						<div class="pswp__caption__center"></div>
+					</div>
+				</div>
+			</div>
+        </div>
+    );
+}
