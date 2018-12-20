@@ -1,0 +1,57 @@
+.desktop-mobile-panel {
+
+	.components-tab-panel__tabs {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+
+		.tab-panel-item {
+			width: 50%;
+			cursor: pointer;
+			background-color: transparent;
+			border-color: #6c7781;
+			color: #444;
+			padding: 0;
+			height: 30px;
+			line-height: 28px;
+			padding: 0 12px 2px;
+
+			div {
+				display: flex;
+				flex-wrap: nowrap;
+				width: 100%;
+				height: 100%;
+				justify-content: center;
+				align-items: center;
+				svg { margin-right: 10px; }
+			}
+
+			&:first-child { border-radius: 4px 0 0 4px; }
+			&:last-child { border-radius: 0 4px 4px 0; }
+
+			&.tab-panel-item-active {
+				background-color: #6c7781;
+				color: #fff;
+				border: 1px solid #6c7781;
+				cursor: default;
+			}
+
+			&:hover:not(.tab-panel-item-active) {
+				box-shadow: inset 0px -1px 0px 0px #6c7781;
+			}
+
+			&:active,
+			&:focus {
+				background-color:  #11a0d2;
+				border: 1px solid #11a0d2;
+				color: #fff;
+				outline: none;
+			}
+		}
+	}
+}
+
+.tab-panel-content {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+}

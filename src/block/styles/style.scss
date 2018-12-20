@@ -1,300 +1,487 @@
 
 /**
- * Often re-used variables
- */
-// Fonts & basics
-$default-font: -apple-system, BlinkMacSystemFont,"Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell,"Helvetica Neue", sans-serif;
-$default-font-size: 13px;
-$default-line-height: 1.4;
-$editor-font: "Noto Serif", serif;
-$editor-html-font: Menlo, Consolas, monaco, monospace;
-$editor-font-size: 16px;
-$text-editor-font-size: 14px;
-$editor-line-height: 1.8;
-$big-font-size: 18px;
-$mobile-text-min-font-size: 16px; // Any font size below 16px will cause Mobile Safari to "zoom in"
-// Grid size
-$grid-size-small: 4px;
-$grid-size: 8px;
-$grid-size-large: 16px;
-$border-width: 1px;
-$content-width: 610px;
-/**
- * Breakpoint mixins
- */
-@mixin break-small() {
-	@media (min-width: #{ ($break-small) }) {
-		@content;
-	}
-}
-/**
- * Colors
- */
-$black: #000;
-$dark-gray-900: #191e23;
-$dark-gray-800: #23282d;
-$dark-gray-700: #32373c;
-$dark-gray-600: #40464d;
-$dark-gray-500: #555d66; // Use this most of the time for dark items.
-$dark-gray-400: #606a73;
-$dark-gray-300: #6c7781; // Lightest gray that can be used for AA text contrast.
-$dark-gray-200: #7e8993;
-$dark-gray-150: #8d96a0; // Lightest gray that can be used for AA non-text contrast.
-$dark-gray-100: #8f98a1;
-$light-gray-900: #a2aab2;
-$light-gray-800: #b5bcc2;
-$light-gray-700: #ccd0d4;
-$light-gray-600: #d7dade;
-$light-gray-500: #e2e4e7; // Good for "grayed" items and borders.
-$light-gray-400: #e8eaeb; // Good for "readonly" input fields and special text selection.
-$light-gray-300: #edeff0;
-$light-gray-200: #f3f4f5;
-$light-gray-100: #f8f9f9;
-$white: #fff;
-// Dark opacities, for use with light themes.
-$dark-opacity-900: rgba(#000510, 0.9);
-$dark-opacity-800: rgba(#00000a, 0.85);
-$dark-opacity-700: rgba(#06060b, 0.8);
-$dark-opacity-600: rgba(#000913, 0.75);
-$dark-opacity-500: rgba(#0a1829, 0.7);
-$dark-opacity-400: rgba(#0a1829, 0.65);
-$dark-opacity-300: rgba(#0e1c2e, 0.62);
-$dark-opacity-200: rgba(#162435, 0.55);
-$dark-opacity-100: rgba(#223443, 0.5);
-$dark-opacity-light-900: rgba(#304455, 0.45);
-$dark-opacity-light-800: rgba(#425863, 0.4);
-$dark-opacity-light-700: rgba(#667886, 0.35);
-$dark-opacity-light-600: rgba(#7b86a2, 0.3);
-$dark-opacity-light-500: rgba(#9197a2, 0.25);
-$dark-opacity-light-400: rgba(#95959c, 0.2);
-$dark-opacity-light-300: rgba(#829493, 0.15);
-$dark-opacity-light-200: rgba(#8b8b96, 0.1);
-$dark-opacity-light-100: rgba(#747474, 0.05);
-/**
  * Breakpoints & Media Queries
  */
-$break-huge: 1440px;
-$break-wide: 1280px;
-$break-xlarge: 1080px;
-$break-large: 960px;
-$break-medium: 782px;
-$break-small: 600px;
-$break-mobile: 480px;
+ $break-huge: 1440px;
+ $break-wide: 1280px;
+ $break-xlarge: 1080px;
+ $break-large: 960px;
+ $break-medium: 782px;
+ $break-small: 600px;
+ $break-mobile: 480px;
+
+
+ .gallery-container {
+	 margin: 0;
+	 padding: 0;
+	 width: 100%;
+	 box-sizing: border-box;
+
+	 .gallery-item {
+		 position: relative;
+
+		 &:active,
+		 &:focus {
+			 outline: none;
+		 }
+
+		 img.gallery-img {
+			 transition: all 500ms;
+
+			 &.gallery-img-prod {
+				 opacity: 0;
+				 transform: scale(0);
+			 }
+
+			 &.loaded {
+				 &.gallery-img-prod {
+					 opacity: 1;
+					 transform: scale(1);
+				 }
+			 }
+
+			 &:active,
+			 &:focus {
+				 outline: none;
+			 }
+		 }
+
+		 figcaption {
+			 display: table;
+			 box-sizing: border-box;
+			 position: absolute;
+			 bottom: 0;
+			 width: 100%;
+			 max-height: 100%;
+			 overflow: auto;
+			 padding: 40px 10px 5px;
+			 color: white;
+			 text-align: center;
+			 font-size: 0.8em;
+			 background: linear-gradient(
+				 0deg,
+				 rgba($color: black, $alpha: 0.7) 0,
+				 rgba($color: black, $alpha: 0.3) 60%,
+				 transparent
+			 );
+			 img { display: inline; }
+		 }
+	 }
+ }
 
 
 
+ figure.gallery-item  {
+	 display: block;
+	 margin-block-start: 0;
+	 margin-block-end: 0;
+	 margin-inline-start: 0;
+	 margin-inline-end: 0;
+	 line-height: 0;
+ }
 
 
+ @media (min-width: 601px) {
 
 
+	 /*
+		 layout-type-${ layoutType }
+		 layout-row-dim-${ layoutRowDim }
+		 layout-column-dim-${ layoutColumnDim }
+		 layout-grid-dim-${ layoutGridDim }
+
+		 image-crop`]: imageCrop,
+		 image-shape-type-${ imageShapeType }
+		 image-shape-value
+
+		 gallery-padding-${ galleryPadding }
+		 gallery-padding-mobile-${ galleryPaddingMobile }
+		 no-gutter
+		 no-gutter-mobile
+		 gutter-${ gutter }
+		 gutter-mobile-${ gutterMobile }
+		 */
+
+	.gallery-container {
 
 
-.addMediaBtnWrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: none;
-    border: none;
-    border-radius: 0;
-    height: 100px;
-    min-height: 100px;
-    cursor: pointer;
+		// Stack layout
+		&.layout-type-stack {
+			display: flex;
+			flex-wrap: nowrap;
+			flex-direction: column;
 
-    .addMediaBtn {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        min-height: 100%;
-        color: #191e23;
-        background: #f7f7f7;
-        border: 1px solid #f7f7f7;
-        font-size: 13px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+			.gallery-item {
+				width: 100%;
+				img.gallery-img {
+					width: 100%;
+					height: auto;
+					max-width: 300px;
+					max-height: 300px;
+					min-width: 100px;
+					min-height: 100px;
+				}
+			}
 
-        &:hover {
-          border: 1px solid black;
-        }
-
-    }
-}
-
-li.blocks-gallery-item {
-	list-style-type: none;
-	position: relative;
-
-	figure {
-		margin-block-start: 0;
-		margin-block-end: 0;
-		margin-inline-start: 0;
-		margin-inline-end: 0;
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.wp-block-gallery {
-	display: flex;
-	flex-wrap: wrap;
-	list-style-type: none;
-	padding: 0;
-
-	.blocks-gallery-image,
-	.blocks-gallery-item {
-		// Add space between thumbnails, and unset right most thumbnails later.
-		margin: 0 $grid-size-large $grid-size-large 0;
-		display: flex;
-		flex-grow: 1;
-		flex-direction: column;
-		justify-content: center;
-		position: relative;
-
-		figure {
-			margin: 0;
-			height: 100%;
-
-			// IE doesn't support flex so omit that.
-			@supports (position: sticky) {
-				display: flex;
-				align-items: flex-end;
-				justify-content: flex-start;
+			// Gutter
+			@for $i from 1 through 20 {
+				&.gutter-#{ $i * 5 } {
+					.gallery-item:not(:last-child) {
+						margin-bottom: #{ round($i * 5) }px;
+					}
+				}
 			}
 		}
 
-		img {
-			display: block;
-			max-width: 100%;
-			height: auto;
-		}
-
-		// IE doesn't handle cropping, so we need an explicit width here.
-		img {
-			width: 100%;
-
-			// IE11 doesn't read rules inside this query. They are applied only to modern browsers.
-			@supports (position: sticky) {
-				width: auto;
-			}
-		}
-
-		figcaption {
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-			max-height: 100%;
-			overflow: auto;
-			padding: 40px 10px 5px;
-			color: $white;
-			text-align: center;
-			font-size: $default-font-size;
-			background: linear-gradient(0deg, rgba($color: $black, $alpha: 0.7) 0, rgba($color: $black, $alpha: 0.3) 60%, transparent);
-
-			img {
-				display: inline;
-			}
-		}
-	}
-
-	// Cropped
-	&.is-cropped .blocks-gallery-image,
-	&.is-cropped .blocks-gallery-item {
-		a,
-		img {
-			// IE11 doesn't support object-fit, so just make sure images aren't skewed.
-			// The following rules are for all browsers.
-			width: 100%;
-
-			// IE11 doesn't read rules inside this query. They are applied only to modern browsers.
-			@supports (position: sticky) {
-				height: 100%;
-				flex: 1;
-				object-fit: cover;
-			}
-		}
-	}
-
-	// On mobile and responsive viewports, we allow only 1 or 2 columns at the most.
-	& .blocks-gallery-image,
-	& .blocks-gallery-item {
-		width: calc((100% - #{ $grid-size-large }) / 2);
-
-		&:nth-of-type(even) {
-			margin-right: 0;
-		}
-	}
-
-	&.columns-1 .blocks-gallery-image,
-	&.columns-1 .blocks-gallery-item {
-		width: 100%;
-		margin-right: 0;
-	}
-
-	// Beyond mobile viewports, we allow up to 8 columns.
-	@include break-small {
-		@for $i from 3 through 8 {
-			&.columns-#{ $i } .blocks-gallery-image,
-			&.columns-#{ $i } .blocks-gallery-item {
-				width: calc((100% - #{ $grid-size-large } * #{ $i - 1 }) / #{ $i });
-				margin-right: 16px;
-			}
-		}
-
-		// Unset the right margin on every rightmost gallery item to ensure center balance.
-		@for $column-count from 1 through 8 {
-			&.columns-#{ $column-count } .blocks-gallery-image:nth-of-type(#{ $column-count }n),
-			&.columns-#{ $column-count } .blocks-gallery-item:nth-of-type(#{ $column-count }n) {
-				margin-right: 0;
-			}
-		}
-	}
-
-	// Last item always needs margins reset.
-	.blocks-gallery-image:last-child,
-	.blocks-gallery-item:last-child {
-		margin-right: 0;
-	}
-
-	// Make the "Add new Gallery item" button full-width (so it always appears
-	// below other items).
-	.blocks-gallery-item {
-		&.has-add-item-button {
-			width: 100%;
-		}
-	}
-
-	// Apply max-width to floated items that have no intrinsic width.
-	&.alignleft,
-	&.alignright {
-		max-width: $content-width / 2;
-		width: 100%;
-	}
-
-	// Keep the display property consistent when alignments are applied
-	// to preserve columns
-	&.alignleft,
-	&.aligncenter,
-	&.alignright {
-		display: flex;
-	}
-
-	// If the gallery is centered, center the content inside as well.
-	&.aligncenter {
-		.blocks-gallery-item figure {
+		// Row layout
+		&.layout-type-row {
+			display: flex;
+			flex-wrap: wrap;
+			flex-direction: row;
+			align-content: center;
+			align-items: center;
 			justify-content: center;
+
+			.gallery-item {
+				img.gallery-img {
+					width: auto;
+					height: 100%;
+				}
+			}
+
+			// Row height
+			@for $i from 20 through 60 {
+				&.layout-row-dim-#{ $i * 5 } {
+					.gallery-item  {
+						height: #{ round($i * 5) }px;
+					}
+				}
+			}
+
+			// Gutter
+			@for $i from 1 through 20 {
+				&.gutter-#{ $i * 5 } {
+					.gallery-item {
+						margin: #{ round($i * 5 / 2) }px;
+					}
+				}
+			}
+
+			&.no-gutter .gallery-item {
+				margin: 0;
+			}
+		}
+
+		// Column layout
+		&.layout-type-column {
+			display: inline-block;
+
+			.gallery-item {
+				break-inside: avoid-column;
+
+				img.gallery-img {
+					width: 100%;
+					height: auto
+				}
+			}
+
+			// Column width
+			@for $i from 20 through 60 {
+				&.layout-column-dim-#{ $i * 5 }   {
+					columns: #{ round($i * 5) }px;
+
+					.gallery-item {
+						// max-width: #{ round($i * 5) }px
+					}
+				}
+			}
+
+			// Gutter
+			@for $i from 1 through 20 {
+				&.gutter-#{ $i * 5 } {
+					column-gap: #{ $i * 5 }px;
+
+					.gallery-item {
+						margin-bottom: #{ round($i * 5) }px;
+					}
+				}
+			}
+			&.no-gutter {
+				column-gap: 0;
+
+				.gallery-item {
+					margin: 0;
+				}
+			}
+		}
+
+		// Grid layout
+		// custom clip path => http://bennettfeely.com/clippy/
+		&.layout-type-grid {
+			display: grid;
+			justify-content: center;
+
+			.gallery-item {
+				display: flex;
+				align-items: center;
+				margin: 0 auto;
+			}
+
+
+			// Grid height/width items
+			@for $i from 20 through 60 {
+				$size: #{ round($i * 5) }px;
+
+				&.layout-grid-dim-#{ $i * 5 } {
+					grid-template-columns: repeat(auto-fit, minmax(#{$size}, #{$size}));
+					grid-template-rows: repeat(auto-fit, minmax(#{$size}, #{$size}));
+
+					.gallery-item {
+						img.gallery-img {
+							// width: $size;
+							max-width: $size;
+							// height: $size;
+							max-height: $size;
+						}
+					}
+				}
+			}
+
+			// Gutter
+			@for $i from 1 through 20 {
+				&.gutter-#{ $i * 5 } {
+					grid-gap: #{ $i * 5 }px;
+				}
+			}
+		}
+
+		// Crop image
+		&.image-crop {
+
+			.gallery-item {
+				overflow: hidden;
+				img.gallery-img {
+					object-fit: cover;
+				}
+			}
+
+			@for $i from 20 through 60 {
+				$size: #{ round($i * 5) }px;
+
+				&.layout-stack-dim-#{ $i * 5 },
+				&.layout-row-dim-#{ $i * 5 },
+				&.layout-column-dim-#{ $i * 5 },
+				&.layout-grid-dim-#{ $i * 5 } {
+
+					.gallery-item {
+						img.gallery-img {
+							width: $size;
+							height: $size;
+							min-width: $size;
+							min-height: $size;
+							max-width: $size;
+							max-height: $size;
+						}
+					}
+				}
+			}
+		}
+
+
+		// Layout items shapes
+		&.image-shape-type-square {
+			.gallery-item {
+				img.gallery-img {
+				}
+			}
+		}
+		&.image-shape-type-rhombus {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+				}
+			}
+		}
+		&.image-shape-type-triangle {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+				}
+			}
+		}
+
+		&.image-shape-type-circle {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: circle(50% at 50% 50%);
+				}
+			}
+		}
+		&.image-shape-type-pentagon {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+				}
+			}
+		}
+		&.image-shape-type-hexagon {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+				}
+			}
+		}
+		&.image-shape-type-octagon {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+				}
+			}
+		}
+		&.image-shape-type-rablet {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
+				}
+			}
+		}
+		&.image-shape-type-star {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+				}
+			}
+		}
+		&.image-shape-type-cross {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+				}
+			}
+		}
+		&.image-shape-type-frame {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(0% 0%, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 75% 75%, 25% 75%, 25% 100%, 100% 100%, 100% 0%);
+				}
+			}
+		}
+
+		&.image-shape-type-stupid {
+			.gallery-item {
+				img.gallery-img {
+					clip-path: polygon(3% 14%, 49% 65%, 22% 0, 70% 5%, 56% 73%, 100% 41%, 41% 27%, 99% 68%, 16% 83%, 62% 88%, 53% 53%, 22% 49%, 77% 93%, 51% 0, 1% 73%, 100% 0, 31% 100%);
+				}
+			}
+		}
+
+
+
+		&.image-shape-type-custom {
+			.gallery-item {
+				img.gallery-img {
+				}
+			}
+		}
+
+
+	}
+
+
+
+
+
+
+	 .layout-grid {
+
+
+
+
+
+	 }
+
+
+
+	 // Gallery padding
+	 @for $i from 1 through 20 {
+		 .gallery-padding-#{ $i * 5 } {
+			 padding: #{ round($i * 5) }px;
+		 }
+	 }
+
+ }
+
+
+ // For desktop.
+ @media (max-width: 600px) {
+
+	.gallery-container.layout-type-stack,
+	.gallery-container.layout-type-row,
+	.gallery-container.layout-type-column,
+	.gallery-container.layout-type-grid {
+		 .gallery-item {
+			 width: 100%;
+			 height: auto;
+
+			 img.gallery-img {
+				 width: 100%;
+				 height: auto;
+			 }
+		 }
+	 }
+
+	 @for $i from 1 through 10 {
+		 .gutter-mobile-#{ $i * 5 } {
+			 .gallery-item {
+				 margin-top: #{ round($i * 5 / 2) }px;
+				 margin-bottom: #{ round($i * 5 / 2) }px;
+			 }
+		 }
+		 .gallery-padding-mobile-#{ $i * 5 } {
+			 padding: #{ round($i * 5) }px;
+		 }
+	 }
+
+	 .no-gutter-mobile {
+		 .gallery-item {
+			 margin: 0px;
+		 }
+	 }
+ }
+
+
+
+
+
+
+
+.layout-column {
+	.gallery-item {
+		break-inside: avoid-column;
+	}
+
+	// Column count
+	@for $i from 30 through 60 {
+		&.layout-column-max-width-#{ $i * 5 } {
+			columns: #{ round($i * 5) }px;
 		}
 	}
-}
+
+	// Gutter
+	@for $i from 1 through 20 {
+		&.gutter-#{ $i * 5 } {
+			column-gap: #{ $i * 5 }px;
+
+			.gallery-item {
+				margin-bottom: #{ round($i * 5) }px;
+			}
+		}
+	}
+
+	&.no-gutter {
+		column-gap: 0;
+		.gallery-item {
+			margin: 0;
+		}
+	}
+	}
